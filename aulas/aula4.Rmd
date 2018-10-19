@@ -1,7 +1,0 @@
----
-title: "Mineração de dados - Aula 4"
-author: "Marcelo Keese Albertini"
-date: "23 de agosto de 2018"
-output: html_document
----
-
