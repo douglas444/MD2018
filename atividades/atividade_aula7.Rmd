@@ -28,8 +28,8 @@ head(textstat)
 indice_tfidf <- dfm_tfidf(dfm)
 View(as.matrix(indice_tfidf)[1:5,1:10])
 
-require(caret)
 require(e1071)
+require(caret)
 
 #Extrai coluna Modalidade da Licitação
 modalidades <- data.matrix(contratos$'Modalidade da Licitação')

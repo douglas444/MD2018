@@ -1,0 +1,25 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Lê dados
+require(readr)
+require(dplyr)
+contratos <- read_csv("dados/contratos.csv")
+
+#Tabela de contigência
+tabela <- table(select(contratos, 'Modalidade da Licitação', 'Valor inicial'))
+print(head(tabela))
+
+#Sumário
+valores <- data.matrix(contratos$'Valor inicial');
+valores <- sub('R$', '', as.character(valores), fixed=TRUE);
+valores <- gsub(',', '', as.character(valores), fixed=TRUE);
+valores <- as.numeric(valores);
+valores[is.na(valores)] <- 0
+summary(valores)
+
+#Boxplot
+boxplot(valores,horizontal = T)
+rug(valores)

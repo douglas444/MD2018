@@ -146,7 +146,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("rede_neural.Rmd");
+  window.initializeSourceEmbed("atividade_aulaArvore.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -184,26 +184,25 @@ $(document).ready(function () {
 <h1>Extrai coluna Valor inicial</h1>
 <p>valores &lt;- data.matrix(contratos$‘Valor inicial’);</p>
 </div>
-<div id="converte-para-numerico" class="section level1">
-<h1>Converte para numérico</h1>
-<p>valores &lt;- sub(‘R$’, ‘’, as.character(valores), fixed=TRUE); valores &lt;- gsub(’,‘,’’, as.character(valores), fixed=TRUE); valores &lt;- as.numeric(valores); valores[is.na(valores)] &lt;- 0</p>
+<div id="converte-para-fator" class="section level1">
+<h1>Converte para fator</h1>
+<p>valores &lt;- sub(‘R$’, ‘’, as.character(valores), fixed=TRUE); valores &lt;- gsub(’,‘,’’, as.character(valores), fixed=TRUE); valores &lt;- as.numeric(valores); valores[is.na(valores)] &lt;- 0 valores &lt;- as.data.frame(valores)</p>
 </div>
 <div id="extrai-coluna-modalidade-da-licitacao" class="section level1">
 <h1>Extrai coluna Modalidade da Licitação</h1>
 <p>modalidades &lt;- data.matrix(contratos$‘Modalidade da Licitação’)</p>
 </div>
-<div id="converte-para-numerico-1" class="section level1">
-<h1>Converte para numérico</h1>
-<p>for (row in 1:nrow(modalidades)) { modalidades[row] &lt;- substring(modalidades[row], 1, 1); } modalidades &lt;- as.numeric(modalidades);</p>
+<div id="converte-para-fator-1" class="section level1">
+<h1>Converte para fator</h1>
+<p>for (row in 1:nrow(modalidades)) { modalidades[row] &lt;- substring(modalidades[row], 1, 1); } modalidades &lt;- as.factor(modalidades);</p>
 </div>
-<div id="treina-rede-para-predizer-a-modalidade-com-base-no-valor" class="section level1">
-<h1>Treina rede para predizer a modalidade com base no valor</h1>
-<p>require(freestats); set.seed(1); S &lt;- as.data.frame(valores) S$bias &lt;- 1 r &lt;- perceptrain(S = S, y = modalidades, alpha_k = 1, endcost = 100000);</p>
-<p>r$Z_history</p>
+<div id="constroi-arvore" class="section level1">
+<h1>Constrói árvore</h1>
+<p>mod1 &lt;- C5.0(x = valores, y = modalidades) plot(mod1)</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKI0zDqiBkYWRvcwpyZXF1aXJlKHJlYWRyKTsKY29udHJhdG9zIDwtIHJlYWRfY3N2KCJkYWRvcy9jb250cmF0b3MuY3N2Iik7CgojRXh0cmFpIGNvbHVuYSBWYWxvciBpbmljaWFsCnZhbG9yZXMgPC0gZGF0YS5tYXRyaXgoY29udHJhdG9zJCdWYWxvciBpbmljaWFsJyk7CgojQ29udmVydGUgcGFyYSBudW3DqXJpY28KdmFsb3JlcyA8LSBzdWIoJ1IkJywgJycsIGFzLmNoYXJhY3Rlcih2YWxvcmVzKSwgZml4ZWQ9VFJVRSk7CnZhbG9yZXMgPC0gZ3N1YignLCcsICcnLCBhcy5jaGFyYWN0ZXIodmFsb3JlcyksIGZpeGVkPVRSVUUpOwp2YWxvcmVzIDwtIGFzLm51bWVyaWModmFsb3Jlcyk7CnZhbG9yZXNbaXMubmEodmFsb3JlcyldIDwtIDAKCiNFeHRyYWkgY29sdW5hIE1vZGFsaWRhZGUgZGEgTGljaXRhw6fDo28KbW9kYWxpZGFkZXMgPC0gZGF0YS5tYXRyaXgoY29udHJhdG9zJCdNb2RhbGlkYWRlIGRhIExpY2l0YcOnw6NvJykKCiNDb252ZXJ0ZSBwYXJhIG51bcOpcmljbwpmb3IgKHJvdyBpbiAxOm5yb3cobW9kYWxpZGFkZXMpKSB7CiAgICBtb2RhbGlkYWRlc1tyb3ddIDwtIHN1YnN0cmluZyhtb2RhbGlkYWRlc1tyb3ddLCAxLCAxKTsKfQptb2RhbGlkYWRlcyA8LSBhcy5udW1lcmljKG1vZGFsaWRhZGVzKTsKCiNUcmVpbmEgcmVkZSBwYXJhIHByZWRpemVyIGEgbW9kYWxpZGFkZSBjb20gYmFzZSBubyB2YWxvcgpyZXF1aXJlKGZyZWVzdGF0cyk7CnNldC5zZWVkKDEpOwpTIDwtIGFzLmRhdGEuZnJhbWUodmFsb3JlcykKUyRiaWFzIDwtIDEKciA8LSBwZXJjZXB0cmFpbihTID0gUywKICAgICAgICAgICAgICAgICB5ID0gbW9kYWxpZGFkZXMsCiAgICAgICAgICAgICAgICAgYWxwaGFfayA9IDEsCiAgICAgICAgICAgICAgICAgZW5kY29zdCA9IDEwMDAwMCk7CiAgICAgICAgICAgICAgICAgCnIkWl9oaXN0b3J5Cg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKI0zDqiBkYWRvcwpyZXF1aXJlKHJlYWRyKTsKY29udHJhdG9zIDwtIHJlYWRfY3N2KCJkYWRvcy9jb250cmF0b3MuY3N2Iik7CgojRXh0cmFpIGNvbHVuYSBWYWxvciBpbmljaWFsCnZhbG9yZXMgPC0gZGF0YS5tYXRyaXgoY29udHJhdG9zJCdWYWxvciBpbmljaWFsJyk7CgojQ29udmVydGUgcGFyYSBmYXRvcgp2YWxvcmVzIDwtIHN1YignUiQnLCAnJywgYXMuY2hhcmFjdGVyKHZhbG9yZXMpLCBmaXhlZD1UUlVFKTsKdmFsb3JlcyA8LSBnc3ViKCcsJywgJycsIGFzLmNoYXJhY3Rlcih2YWxvcmVzKSwgZml4ZWQ9VFJVRSk7CnZhbG9yZXMgPC0gYXMubnVtZXJpYyh2YWxvcmVzKTsKdmFsb3Jlc1tpcy5uYSh2YWxvcmVzKV0gPC0gMAp2YWxvcmVzIDwtIGFzLmRhdGEuZnJhbWUodmFsb3JlcykKCiNFeHRyYWkgY29sdW5hIE1vZGFsaWRhZGUgZGEgTGljaXRhw6fDo28KbW9kYWxpZGFkZXMgPC0gZGF0YS5tYXRyaXgoY29udHJhdG9zJCdNb2RhbGlkYWRlIGRhIExpY2l0YcOnw6NvJykKCiNDb252ZXJ0ZSBwYXJhIGZhdG9yCmZvciAocm93IGluIDE6bnJvdyhtb2RhbGlkYWRlcykpIHsKICAgIG1vZGFsaWRhZGVzW3Jvd10gPC0gc3Vic3RyaW5nKG1vZGFsaWRhZGVzW3Jvd10sIDEsIDEpOwp9Cm1vZGFsaWRhZGVzIDwtIGFzLmZhY3Rvcihtb2RhbGlkYWRlcyk7CgojQ29uc3Ryw7NpIMOhcnZvcmUKbW9kMSA8LSBDNS4wKHggPSB2YWxvcmVzLCB5ID0gbW9kYWxpZGFkZXMpCnBsb3QobW9kMSkK</div>
 
 
 

@@ -1,0 +1,31 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Lê dados
+require(readr);
+contratos <- read_csv("dados/contratos.csv");
+
+#Extrai coluna Valor inicial
+valores <- data.matrix(contratos$'Valor inicial');
+
+#Converte para fator
+valores <- sub('R$', '', as.character(valores), fixed=TRUE);
+valores <- gsub(',', '', as.character(valores), fixed=TRUE);
+valores <- as.numeric(valores);
+valores[is.na(valores)] <- 0
+valores <- as.data.frame(valores)
+
+#Extrai coluna Modalidade da Licitação
+modalidades <- data.matrix(contratos$'Modalidade da Licitação')
+
+#Converte para fator
+for (row in 1:nrow(modalidades)) {
+    modalidades[row] <- substring(modalidades[row], 1, 1);
+}
+modalidades <- as.factor(modalidades);
+
+#Constrói árvore
+mod1 <- C5.0(x = valores, y = modalidades)
+plot(mod1)
