@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+#Lê dados
+require(readr);
+data <- read_csv("dados/digit_recognizer_train.csv");
+
+qtd <- 10000
+
+x <- data.matrix(data[0:qtd,2:ncol(data-1)])
+y <- data.matrix(data[0:qtd,1])
+
+
+y <- as.factor(y)
+y <- make.names(y, unique = FALSE, allow_ = TRUE)
+
+#random sample half the rows 
+s = sample(dim(x)[1], dim(x)[1]/4)
+#create training and test data sets
+x_treino = x[-s,]
+x_teste = x[s,]
+
+y_treino = y[-s]
+y_teste = y[s]
+
+
+#AdaBoost
+require(caret)
+
+trainCtrlBag <- trainControl(method="repeatedcv", number = 2, repeats = 1, classProbs = TRUE, returnResamp = "all", verboseIter = TRUE)
+
+tunegrid <- expand.grid(.mfinal = 1, .maxdepth = c(5:10))
+
+model.adabag.1 <- train(x_treino, y_treino, method="AdaBag", tuneGrid=tunegrid, trControl=trainCtrlBag)
+
+pred.test.adabag <- predict.train(model.adabag.1, x_teste)
+confusionMatrix(table(pred.test.adabag, y_teste))
