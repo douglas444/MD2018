@@ -24,9 +24,9 @@ modalidades <- data.matrix(contratos$'Modalidade da Licitação')
 for (row in 1:nrow(modalidades)) {
     modalidades[row] <- substring(modalidades[row], 1, 1);
 }
-modalidades <- as.factor(modalidades);
 modalidades <- make.names(modalidades, unique = FALSE, allow_ = TRUE)
 
+modalidades <- as.factor(modalidades);
 
 #random sample half the rows 
 halfsample = sample(dim(valores)[1], dim(valores)[1]/4) # half of sample
