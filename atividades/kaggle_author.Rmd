@@ -8,7 +8,6 @@ require(readr);
 contratos <- read_csv("dados/author.csv");
 contratos <- contratos[1:500,]
 
-
 #Gera corpus para a coluna Objeto
 require(quanteda)
 corpus <- corpus(contratos, text_field = "text")
@@ -16,22 +15,25 @@ corpus <- corpus(contratos, text_field = "text")
 #Gera tokens
 tokens <- tokens_tolower(tokens(corpus))
 
+tokens <- tokens_select(tokens, stopwords('en'), selection = "remove")
+
+
 #Gera dfm
-dfm <- dfm(tokens, tolower = FALSE, remove_punct = TRUE)
+dfm <- dfm(tokens, tolower = FALSE, remove_punct = TRUE, stem = TRUE)
 
 #Gera estatística
 textstat <- textstat_frequency(dfm, n = 6)
 head(textstat)
 
 #Gera indice TFIDF
-indice_tfidf <- dfm_tfidf(dfm)
+indice_tfidf <- data.frame(dfm_tfidf(dfm))
+indice_tfidf <- indice_tfidf[,-1] 
 
 require(e1071)
 require(caret)
 
 #Extrai coluna Modalidade da Licitação
 modalidades <- data.matrix(contratos$'author')
-y <- make.names(modalidades, unique = FALSE, allow_ = TRUE)
 
 #Converte para numérico
 modalidades <- as.factor(modalidades);
@@ -48,7 +50,7 @@ trainCtrlBag <- trainControl(method="repeatedcv", number = 2, repeats = 1, class
 tunegrid <- expand.grid(.mfinal = 1, .maxdepth = c(5:10))
 
 
-model.adabag.1 <- train(indice_tfidf[treino], modalidades[treino], method="AdaBag", tuneGrid=tunegrid, trControl=trainCtrlBag)
+model.adabag.1 <- train(indice_tfidf[treino,], modalidades[treino], method="AdaBag", tuneGrid=tunegrid, trControl=trainCtrlBag)
 
-pred.test.adabag <- predict.train(model.adabag.1, indice_tfidf[-treino])
+pred.test.adabag <- predict.train(model.adabag.1, indice_tfidf[-treino,])
 confusionMatrix(table(pred.test.adabag,  modalidades[-treino]))
