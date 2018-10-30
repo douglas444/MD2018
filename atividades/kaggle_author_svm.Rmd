@@ -41,15 +41,7 @@ autores <- as.factor(autores);
 #Define porcentagem dos dados para treino
 treino <- createDataPartition(y=autores,p = .5)$Resample1
 
-
-#AdaBag
-require(caret)
-
-trainCtrlBag <- trainControl(method="repeatedcv", number = 2, repeats = 1, classProbs = TRUE, returnResamp = "all", verboseIter = TRUE)
-
-tunegrid <- expand.grid(.mfinal = 1, .maxdepth = c(5:10))
-
-model.adabag.1 <- train(indice_tfidf[treino,], autores[treino], method="AdaBag", tuneGrid=tunegrid, trControl=trainCtrlBag)
-
-pred.test.adabag <- predict.train(model.adabag.1, indice_tfidf[-treino,])
-confusionMatrix(table(pred.test.adabag,  autores[-treino]))
+#Executa SVM
+modelo <- svm(x=indice_tfidf[treino,], y=autores[treino])
+predicoes <- predict(modelo, indice_tfidf[-treino,])
+confusionMatrix(predicoes, autores[-treino])
