@@ -12,9 +12,12 @@ qtd <- 10000
 x <- data.matrix(data[0:qtd,2:ncol(data-1)])
 y <- data.matrix(data[0:qtd,1])
 
-
 y <- as.factor(y)
 y <- make.names(y, unique = FALSE, allow_ = TRUE)
+
+#x <- ifelse(x > 0,1,0)
+#x = prcomp(x, center=FALSE, scale.=FALSE) 
+#x = x$x
 
 #random sample half the rows 
 s = sample(dim(x)[1], dim(x)[1]/4)
@@ -26,7 +29,8 @@ y_treino = y[-s]
 y_teste = y[s]
 
 
-#AdaBoost
+
+#AdaBag
 require(caret)
 
 trainCtrlBag <- trainControl(method="repeatedcv", number = 2, repeats = 1, classProbs = TRUE, returnResamp = "all", verboseIter = TRUE)

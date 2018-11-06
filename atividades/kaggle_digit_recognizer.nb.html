@@ -146,7 +146,7 @@ $(document).ready(function () {
 </style>
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("kaggle_author.Rmd");
+  window.initializeSourceEmbed("kaggle_digit_recognizer.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
@@ -178,55 +178,36 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <div id="le-dados" class="section level1">
 <h1>Lê dados</h1>
-<p>require(readr); contratos &lt;- read_csv(“dados/author.csv”); contratos &lt;- contratos[1:5000,]</p>
+<p>require(readr); data &lt;- read_csv(“dados/digit_recognizer_train.csv”);</p>
+<p>qtd &lt;- 10000</p>
+<p>x &lt;- data.matrix(data[0:qtd,2:ncol(data-1)]) y &lt;- data.matrix(data[0:qtd,1])</p>
+<p>y &lt;- as.factor(y) y &lt;- make.names(y, unique = FALSE, allow_ = TRUE)</p>
 </div>
-<div id="gera-corpus-para-a-coluna-objeto" class="section level1">
-<h1>Gera corpus para a coluna Objeto</h1>
-<p>require(quanteda) corpus &lt;- corpus(contratos, text_field = “text”)</p>
+<div id="x---ifelsex-010" class="section level1">
+<h1>x &lt;- ifelse(x &gt; 0,1,0)</h1>
 </div>
-<div id="gera-tokens" class="section level1">
-<h1>Gera tokens</h1>
-<p>tokens &lt;- tokens_tolower(tokens(corpus))</p>
+<div id="x-prcompx-centerfalse-scale.false" class="section level1">
+<h1>x = prcomp(x, center=FALSE, scale.=FALSE)</h1>
 </div>
-<div id="tokens---tokens_selecttokens-stopwordsen-selection-remove" class="section level1">
-<h1>tokens &lt;- tokens_select(tokens, stopwords(‘en’), selection = “remove”)</h1>
+<div id="x-xx" class="section level1">
+<h1>x = x$x</h1>
 </div>
-<div id="gera-dfm" class="section level1">
-<h1>Gera dfm</h1>
-<p>dfm &lt;- dfm(tokens, tolower = FALSE, remove_punct = FALSE, stem = FALSE)</p>
-</div>
-<div id="gera-estatistica" class="section level1">
-<h1>Gera estatística</h1>
-<p>textstat &lt;- textstat_frequency(dfm, n = 6) head(textstat)</p>
-</div>
-<div id="gera-indice-tfidf" class="section level1">
-<h1>Gera indice TFIDF</h1>
-<p>indice_tfidf &lt;- data.frame(dfm_tfidf(dfm)) indice_tfidf &lt;- indice_tfidf[,-1]</p>
-<p>require(e1071) require(caret)</p>
-</div>
-<div id="extrai-coluna-modalidade-da-licitacao" class="section level1">
-<h1>Extrai coluna Modalidade da Licitação</h1>
-<p>autores &lt;- data.matrix(contratos$‘author’)</p>
-</div>
-<div id="converte-para-numerico" class="section level1">
-<h1>Converte para numérico</h1>
-<p>autores &lt;- as.factor(autores);</p>
-</div>
-<div id="define-porcentagem-dos-dados-para-treino" class="section level1">
-<h1>Define porcentagem dos dados para treino</h1>
-<p>treino &lt;- createDataPartition(y=autores,p = .5)$Resample1</p>
+<div id="random-sample-half-the-rows" class="section level1">
+<h1>random sample half the rows</h1>
+<p>s = sample(dim(x)[1], dim(x)[1]/4) #create training and test data sets x_treino = x[-s,] x_teste = x[s,]</p>
+<p>y_treino = y[-s] y_teste = y[s]</p>
 </div>
 <div id="adabag" class="section level1">
 <h1>AdaBag</h1>
 <p>require(caret)</p>
 <p>trainCtrlBag &lt;- trainControl(method=“repeatedcv”, number = 2, repeats = 1, classProbs = TRUE, returnResamp = “all”, verboseIter = TRUE)</p>
 <p>tunegrid &lt;- expand.grid(.mfinal = 1, .maxdepth = c(5:10))</p>
-<p>model.adabag.1 &lt;- train(indice_tfidf[treino,], autores[treino], method=“AdaBag”, tuneGrid=tunegrid, trControl=trainCtrlBag)</p>
-<p>pred.test.adabag &lt;- predict.train(model.adabag.1, indice_tfidf[-treino,]) confusionMatrix(table(pred.test.adabag, autores[-treino]))</p>
+<p>model.adabag.1 &lt;- train(x_treino, y_treino, method=“AdaBag”, tuneGrid=tunegrid, trControl=trainCtrlBag)</p>
+<p>pred.test.adabag &lt;- predict.train(model.adabag.1, x_teste) confusionMatrix(table(pred.test.adabag, y_teste))</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKI0zDqiBkYWRvcwpyZXF1aXJlKHJlYWRyKTsKY29udHJhdG9zIDwtIHJlYWRfY3N2KCJkYWRvcy9hdXRob3IuY3N2Iik7CmNvbnRyYXRvcyA8LSBjb250cmF0b3NbMTo1MDAwLF0KCiNHZXJhIGNvcnB1cyBwYXJhIGEgY29sdW5hIE9iamV0bwpyZXF1aXJlKHF1YW50ZWRhKQpjb3JwdXMgPC0gY29ycHVzKGNvbnRyYXRvcywgdGV4dF9maWVsZCA9ICJ0ZXh0IikKCiNHZXJhIHRva2Vucwp0b2tlbnMgPC0gdG9rZW5zX3RvbG93ZXIodG9rZW5zKGNvcnB1cykpCgojdG9rZW5zIDwtIHRva2Vuc19zZWxlY3QodG9rZW5zLCBzdG9wd29yZHMoJ2VuJyksIHNlbGVjdGlvbiA9ICJyZW1vdmUiKQoKCiNHZXJhIGRmbQpkZm0gPC0gZGZtKHRva2VucywgdG9sb3dlciA9IEZBTFNFLCByZW1vdmVfcHVuY3QgPSBGQUxTRSwgc3RlbSA9IEZBTFNFKQoKI0dlcmEgZXN0YXTDrXN0aWNhCnRleHRzdGF0IDwtIHRleHRzdGF0X2ZyZXF1ZW5jeShkZm0sIG4gPSA2KQpoZWFkKHRleHRzdGF0KQoKI0dlcmEgaW5kaWNlIFRGSURGCmluZGljZV90ZmlkZiA8LSBkYXRhLmZyYW1lKGRmbV90ZmlkZihkZm0pKQppbmRpY2VfdGZpZGYgPC0gaW5kaWNlX3RmaWRmWywtMV0gCgpyZXF1aXJlKGUxMDcxKQpyZXF1aXJlKGNhcmV0KQoKI0V4dHJhaSBjb2x1bmEgTW9kYWxpZGFkZSBkYSBMaWNpdGHDp8OjbwphdXRvcmVzIDwtIGRhdGEubWF0cml4KGNvbnRyYXRvcyQnYXV0aG9yJykKCiNDb252ZXJ0ZSBwYXJhIG51bcOpcmljbwphdXRvcmVzIDwtIGFzLmZhY3RvcihhdXRvcmVzKTsKCiNEZWZpbmUgcG9yY2VudGFnZW0gZG9zIGRhZG9zIHBhcmEgdHJlaW5vCnRyZWlubyA8LSBjcmVhdGVEYXRhUGFydGl0aW9uKHk9YXV0b3JlcyxwID0gLjUpJFJlc2FtcGxlMQoKCiNBZGFCYWcKcmVxdWlyZShjYXJldCkKCnRyYWluQ3RybEJhZyA8LSB0cmFpbkNvbnRyb2wobWV0aG9kPSJyZXBlYXRlZGN2IiwgbnVtYmVyID0gMiwgcmVwZWF0cyA9IDEsIGNsYXNzUHJvYnMgPSBUUlVFLCByZXR1cm5SZXNhbXAgPSAiYWxsIiwgdmVyYm9zZUl0ZXIgPSBUUlVFKQoKdHVuZWdyaWQgPC0gZXhwYW5kLmdyaWQoLm1maW5hbCA9IDEsIC5tYXhkZXB0aCA9IGMoNToxMCkpCgptb2RlbC5hZGFiYWcuMSA8LSB0cmFpbihpbmRpY2VfdGZpZGZbdHJlaW5vLF0sIGF1dG9yZXNbdHJlaW5vXSwgbWV0aG9kPSJBZGFCYWciLCB0dW5lR3JpZD10dW5lZ3JpZCwgdHJDb250cm9sPXRyYWluQ3RybEJhZykKCnByZWQudGVzdC5hZGFiYWcgPC0gcHJlZGljdC50cmFpbihtb2RlbC5hZGFiYWcuMSwgaW5kaWNlX3RmaWRmWy10cmVpbm8sXSkKY29uZnVzaW9uTWF0cml4KHRhYmxlKHByZWQudGVzdC5hZGFiYWcsICBhdXRvcmVzWy10cmVpbm9dKSk=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKI0zDqiBkYWRvcwpyZXF1aXJlKHJlYWRyKTsKZGF0YSA8LSByZWFkX2NzdigiZGFkb3MvZGlnaXRfcmVjb2duaXplcl90cmFpbi5jc3YiKTsKCnF0ZCA8LSAxMDAwMAoKeCA8LSBkYXRhLm1hdHJpeChkYXRhWzA6cXRkLDI6bmNvbChkYXRhLTEpXSkKeSA8LSBkYXRhLm1hdHJpeChkYXRhWzA6cXRkLDFdKQoKeSA8LSBhcy5mYWN0b3IoeSkKeSA8LSBtYWtlLm5hbWVzKHksIHVuaXF1ZSA9IEZBTFNFLCBhbGxvd18gPSBUUlVFKQoKI3ggPC0gaWZlbHNlKHggPiAwLDEsMCkKI3ggPSBwcmNvbXAoeCwgY2VudGVyPUZBTFNFLCBzY2FsZS49RkFMU0UpIAojeCA9IHgkeAoKI3JhbmRvbSBzYW1wbGUgaGFsZiB0aGUgcm93cyAKcyA9IHNhbXBsZShkaW0oeClbMV0sIGRpbSh4KVsxXS80KQojY3JlYXRlIHRyYWluaW5nIGFuZCB0ZXN0IGRhdGEgc2V0cwp4X3RyZWlubyA9IHhbLXMsXQp4X3Rlc3RlID0geFtzLF0KCnlfdHJlaW5vID0geVstc10KeV90ZXN0ZSA9IHlbc10KCgoKI0FkYUJhZwpyZXF1aXJlKGNhcmV0KQoKdHJhaW5DdHJsQmFnIDwtIHRyYWluQ29udHJvbChtZXRob2Q9InJlcGVhdGVkY3YiLCBudW1iZXIgPSAyLCByZXBlYXRzID0gMSwgY2xhc3NQcm9icyA9IFRSVUUsIHJldHVyblJlc2FtcCA9ICJhbGwiLCB2ZXJib3NlSXRlciA9IFRSVUUpCgp0dW5lZ3JpZCA8LSBleHBhbmQuZ3JpZCgubWZpbmFsID0gMSwgLm1heGRlcHRoID0gYyg1OjEwKSkKCm1vZGVsLmFkYWJhZy4xIDwtIHRyYWluKHhfdHJlaW5vLCB5X3RyZWlubywgbWV0aG9kPSJBZGFCYWciLCB0dW5lR3JpZD10dW5lZ3JpZCwgdHJDb250cm9sPXRyYWluQ3RybEJhZykKCnByZWQudGVzdC5hZGFiYWcgPC0gcHJlZGljdC50cmFpbihtb2RlbC5hZGFiYWcuMSwgeF90ZXN0ZSkKY29uZnVzaW9uTWF0cml4KHRhYmxlKHByZWQudGVzdC5hZGFiYWcsIHlfdGVzdGUpKQ==</div>
 
 
 

@@ -6,7 +6,7 @@ output: html_notebook
 #Lê dados
 require(readr);
 contratos <- read_csv("dados/author.csv");
-contratos <- contratos[1:500,]
+contratos <- contratos[1:5000,]
 
 #Gera corpus para a coluna Objeto
 require(quanteda)
@@ -15,11 +15,11 @@ corpus <- corpus(contratos, text_field = "text")
 #Gera tokens
 tokens <- tokens_tolower(tokens(corpus))
 
-tokens <- tokens_select(tokens, stopwords('en'), selection = "remove")
+#tokens <- tokens_select(tokens, stopwords('en'), selection = "remove")
 
 
 #Gera dfm
-dfm <- dfm(tokens, tolower = FALSE, remove_punct = TRUE, stem = TRUE)
+dfm <- dfm(tokens, tolower = FALSE, remove_punct = FALSE, stem = FALSE)
 
 #Gera estatística
 textstat <- textstat_frequency(dfm, n = 6)

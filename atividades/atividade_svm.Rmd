@@ -18,7 +18,7 @@ tokens <- tokens_tolower(tokens(corpus))
 tokens <- tokens_select(tokens, stopwords('pt'), selection = "remove")
 
 #Gera dfm
-dfm <- dfm(tokens, tolower = FALSE, remove_punct = TRUE)
+dfm <- dfm(tokens, tolower = TRUE, remove_punct = TRUE)
 
 #Gera estatística
 textstat <- textstat_frequency(dfm, n = 6)
